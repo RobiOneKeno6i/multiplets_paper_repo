@@ -4,6 +4,39 @@ import itertools
 import math
 import collections
 
+import reproducible
+
+# create a reproducible.Context instance, that will hold all the
+# tracked data.
+context = reproducible.Context()
+
+# recording git repository state
+# here we are okay with running our code with uncommitted changes, but
+# we record a diff of the changes in the tracked data.
+context.add_repo(path='.', allow_dirty=True, diff=True)
+
+# recording parameters; this is not necessarily needed, as the code state
+# is recorded, but it is convenient.
+#seed = 1
+#random.seed(seed)
+#context.add_data('seed', seed)
+
+# add_data return the provided value (here 10), so you can do this:
+#n = reproducible.add_data('n', 10)
+#results = walk(n)
+
+# recording the SHA1 hash of the output file
+#context.add_file('results.pickle', category='output')
+
+# you can examine the tracked data and add or remove from it at any moment
+# with `context.data`: it is a simple dictionary. For instance, the
+# cpu info is quite detailed. Let's remove it to keep the yaml output short.
+#context.data.pop('cpuinfo')
+
+# exporting the provenance data to disk
+context.export_yaml('results_python_prov.yaml')
+
+
 # catalog file GUI requester  
 #import tkinter as tk
 #from tkinter import filedialog
@@ -11,7 +44,7 @@ import collections
 #root = tk.Tk()
 #root.withdraw()
 
-# GRAPHS
+# class for GRAPHS operations and graphics
 # https://networkx.org/documentation/stable/reference/index.html
 import networkx as nx
 
@@ -21,7 +54,7 @@ DGoptions = {
     'width': 1,
 }
 
-# INTERVALS 
+# class for operation on INTERVALS 
 # https://pypi.org/project/portion/
 import portion as P  
 
@@ -39,6 +72,14 @@ gardnerknopofflist = [[2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5,
      8], [19.5, 22.5, 26, 30, 35, 40, 47, 54, 61, 70, 81, 94],[6, 
      11.5, 22, 42, 83, 155, 290, 510, 790, 915, 960, 985]]
 
+# recording parameters; this is not necessarily needed, as the code state
+# is recorded, but it is convenient.
+context.add_data('gardnerknopofflist', gardnerknopofflist)
+
+# exporting the provenance data to disk
+context.export_yaml('results_python_prov.yaml')
+
+
 def gkr(mag):
     return np.interp(mag,gardnerknopofflist[0],gardnerknopofflist[1])
 
@@ -55,9 +96,11 @@ def gkr2(m1, m2, flag):
     else:
         return (m1,m2,gkr(m1),gkr(m2))
     
-# Caloi sphere to plane projection  GEO2XY
-def g2x(listarod):
-    [t,lat,lon,dep,mag,id]=listarod
+# sphere to plane projection  GEO2XY
+def g2x(catalogevent):
+    # the last id column is't really necessary for the algorithm,
+    # it can contain user reference data
+    [t,lat,lon,dep,mag,id]=catalogevent
     R=6367
     alfa=180/math.pi
     x=(R*(lon - lon0)*math.cos(lat/alfa))/alfa - (R*(lon-lon0)**3*math.cos(lat/alfa)*math.sin(lat/alfa)**2)/(6.*alfa**3)
@@ -66,10 +109,11 @@ def g2x(listarod):
 
 
 # seismic catalogue import with numpy
-#catfile='absolute_catalogue_file_path'
+# catfile='absolute_catalogue_file_path'
 # **uncomment for GUI file requester** catfile = filedialog.askopenfilename()
 
-catfile='/Users/robertocarluccio/Downloads/Simulated_100k_005-02-2_geo.txt'
+# please in case data file is not edit 
+catfile='Simulated_100k_005-02-2_geo.txt'
 
 print('loading catalogue data ...')
 raw=np.loadtxt(catfile)
@@ -88,7 +132,7 @@ print('local cartesian coordinates... ',orig.shape)
 removed = "GK"
 gkrad = "sum"; 
 data = orig
-multipletti = []
+multiplets = []
 n = 0
 catalogo = 0
 rj = 0
@@ -112,9 +156,9 @@ mplen=len(mp)
 maxmp=mp[-1]
 data=orig
 
-# put path for intermediate computations data (not strictly necessary: debug purposes)
-np.savetxt('/Users/robertocarluccio/Downloads/python_orig.txt', data, fmt='%10.5f', delimiter='\t', newline='\n', header='', footer='', comments='# ', encoding=None)
-np.savetxt('/Users/robertocarluccio/Downloads/python_mp.txt', mp, fmt='%d')
+# files used for intermediate computations results (not strictly necessary: used for software comprehension and debug purposes )
+np.savetxt('python_orig.txt', data, fmt='%10.5f', delimiter='\t', newline='\n', header='', footer='', comments='# ', encoding=None)
+np.savetxt('python_mp.txt', mp, fmt='%d')
 
 # indexes=np.arange(len(data))
 # re-indexing on extracted sub-list
@@ -127,7 +171,7 @@ print('magnitude subset of ', mplen, 'events...')
 #debug=open('/Volumes/GoogleDrive/Il mio Drive/Colab Notebooks/multiplette/dati/python_debug.txt', 'w')
 
 while(len(mp)>1):
-    intersezioni=[]
+    intersections=[]
     gkconnected=[]
     gkconnectedlists=[]
     vertexlist=[]
@@ -149,7 +193,7 @@ while(len(mp)>1):
     n=0
 
     ######################## POOL GKt search ########################
-    connessi=[]
+    connectedevents=[]
     pool = [[mp[n], data[mp[n]]]]
     intpool = P.closed( data[mp[n],0], data[mp[n],0] + gkt(data[mp[n],4]))
 
@@ -175,12 +219,12 @@ while(len(mp)>1):
             gkt_flag = round(t[1][1][0] - t[0][1][0],6) <= gkt(t[0][1][4])
             mag_flag = -dmplus <= round(data[j][4]-t[1][1][4],6) <= dmminus
 
-            # intersezioni (X,t,mag)
+            # intersections (X,t,mag)
             if gkx_flag and gkt_flag and mag_flag:
-                intersezioni.append(idp)
-                vertexlist = list(set(itertools.chain.from_iterable(intersezioni)))
+                intersections.append(idp)
+                vertexlist = list(set(itertools.chain.from_iterable(intersections)))
 
-            # intersezioni (X,t)
+            # intersections (X,t)
             if gkx_flag and gkt_flag:
                 gkconnectedlists.append(idp)
                 gkconnected = list(set(itertools.chain.from_iterable(gkconnectedlists)))
@@ -190,18 +234,18 @@ while(len(mp)>1):
 
         ####################  GRAPH generation for multiplets count ###################
         DG = nx.DiGraph()
-        DG.add_edges_from(intersezioni)
+        DG.add_edges_from(intersections)
         # nx.draw(DG,with_labels=True, **DGoptions)  # networkx draw()
         # plt.draw()  # pyplot draw()
 
-        #connessi = []
+        #connectedevents = []
         if j in vertexlist:
-            connessi=list(nx.single_source_shortest_path(DG,j).keys())
+            connectedevents=list(nx.single_source_shortest_path(DG,j).keys())
 
     ######################## remove elements from mp and reset for a new pivot search ########################
 
-    if len(connessi)>1:
-        multipletti.append(connessi)
+    if len(connectedevents)>1:
+        multiplets.append(connectedevents)
 
     lmpold=len(mp)
 
@@ -209,16 +253,16 @@ while(len(mp)>1):
         #mp1=[x for x in mp if x not in gkconnected]
         mp=sorted(list(set(mp)-set(gkconnected)))
     elif removed == "GK-Mag":
-        mp=sorted(list(set(mp)-set(intersezioni)))
+        mp=sorted(list(set(mp)-set(intersections)))
 
     mp=sorted(list(set(mp)-set([j])))
     n=0
 
-print('# multiplette', len(multipletti))
+print('# multiplette', len(multiplets))
 
 # lengths count
 cnt = collections.Counter()
-for mlen in [len(x) for x in multipletti]:
+for mlen in [len(x) for x in multiplets]:
     cnt[mlen] += 1
 
 
@@ -226,16 +270,16 @@ print('catalogue file: ',catfile)
 print('threshold magnitude:', magthresh, '(-', dmminus, ') e (+', dmplus,')' )
 print('Extracted a subset of', mplen, 'events from a catalogue of ', len(orig), 'events\n')
 print('algorithm parameters: removal (',removed,') interaction radii function (',gkrad,')')
-print('# multiplets:', len(multipletti))
+print('# multiplets:', len(multiplets))
 print('# counts: ',cnt)
 
-# put path for complete output file save
-f=open('/Users/robertocarluccio/Downloads/python_vs_out_new.txt', 'w')
+# put eventual path for complete output file save
+f=open('python_vs_out_new.txt', 'w')
 print('catalogue file: ',catfile, file=f)
 print('threshold magnitude:', magthresh, '(-', dmminus, ') e (+', dmplus,')' , file=f)
 print('Extracted a subset of', mplen, 'events from a catalogue of ', len(orig), 'events\n', file=f)
 print('algorithm parameters: removal (',removed,') interaction radii function (',gkrad,')', file=f)
-print('# multiplets:', len(multipletti), file=f)
+print('# multiplets:', len(multiplets), file=f)
 print('# counts: ',cnt, file=f)
-print(multipletti, file=f)
+print(multiplets, file=f)
 f.close()
