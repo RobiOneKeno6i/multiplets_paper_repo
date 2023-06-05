@@ -1,0 +1,34 @@
+argv:
+- /Users/robertocarluccio/opt/anaconda3/envs/multiplets/lib/python3.9/site-packages/ipykernel_launcher.py
+- -f
+- /Users/robertocarluccio/Library/Jupyter/runtime/kernel-f22b72f8-74b5-477a-9bb4-7d39197ce39c.json
+packages: null
+platform: macOS-12.6-arm64-arm-64bit
+python:
+  branch: ''
+  compiler: 'Clang 14.0.6 '
+  implementation: CPython
+  revision: ''
+  version:
+  - '3'
+  - '9'
+  - '16'
+repositories:
+  .:
+    diff: "diff --git a/README.md b/README.md\nindex 2cf3cb8..cd268ae 100644\n---\
+      \ a/README.md\n+++ b/README.md\n@@ -4,7 +4,7 @@ The repository contains:\n \n\
+      \ * The originally written *mathematica code notebook* (mathematica_code.nb).This\
+      \ is the software complete with all features and an interactive GUI. The notebook\
+      \ can run on in a licensed Wolfram Mathematica environment (https://www.wolfram.com/mathematica)\
+      \ or in the Wolfram Player Pro (https://www.wolfram.com/player-pro/), the commercial\
+      \ paid version with I/O enabled.\n \n-* the *python porting of the catalog scanning\
+      \ routine core algorithm, added in two formats: \n+* the *python porting* of\
+      \ the catalog scanning routine core algorithm, added in two formats: \n    *\
+      \ pure python code (python_code.py).\n    * the Colab ipython version (multiplets_core_colab.ipynb)\n\
+      \  The code has been checked to behave exactly as the mathematica code. No GUI\
+      \ programming is anyway present: I/O is actually based on disk files read-write.\
+      \ Any user interface can be easily added by experienced Python programmers. "
+    dirty: true
+    hash: 9b22b8261287d02034013b1b078d59e5b90b7221
+    version: git version 2.37.1 (Apple Git-137.1)
+timestamp: '2023-06-05T17:01:48.044649Z'

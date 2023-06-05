@@ -4,7 +4,7 @@ The repository contains:
 
 * The originally written *mathematica code notebook* (mathematica_code.nb).This is the software complete with all features and an interactive GUI. The notebook can run on in a licensed Wolfram Mathematica environment (https://www.wolfram.com/mathematica) or in the Wolfram Player Pro (https://www.wolfram.com/player-pro/), the commercial paid version with I/O enabled.
 
-* the *python porting of the catalog scanning routine core algorithm, added in two formats: 
+* the *python porting* of the catalog scanning routine core algorithm, added in two formats: 
    * pure python code (python_code.py).
    * the Colab ipython version (multiplets_core_colab.ipynb)
  The code has been checked to behave exactly as the mathematica code. No GUI programming is anyway present: I/O is actually based on disk files read-write. Any user interface can be easily added by experienced Python programmers. 
