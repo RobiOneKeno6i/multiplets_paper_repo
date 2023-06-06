@@ -19,6 +19,7 @@ The last ID item is not used by the software but this version of the importer is
   * magthresh=5.5
   * dmplus=.4
   * dmminus=.6
+
 They are present for reference only: in particular 
 * **python_mp.txt** contains the mp vector extracted in the python porting when the magnitude prefiltering is applied to the catalog
 * **python_orig.txt** contains the internally complete converted catalog table where coordinates are referred to a local cartesian coordinate system (the exact origin is not important since filtering is dependent upon *relative* coordinates). 
