@@ -2,6 +2,49 @@ argv:
 - /Users/robertocarluccio/opt/anaconda3/envs/multiplets/lib/python3.9/site-packages/ipykernel_launcher.py
 - -f
 - /Users/robertocarluccio/Library/Jupyter/runtime/kernel-f22b72f8-74b5-477a-9bb4-7d39197ce39c.json
+data:
+  gardnerknopofflist:
+  - - 2.5
+    - 3
+    - 3.5
+    - 4
+    - 4.5
+    - 5
+    - 5.5
+    - 6
+    - 6.5
+    - 7
+    - 7.5
+    - 8
+  - - 19.5
+    - 22.5
+    - 26
+    - 30
+    - 35
+    - 40
+    - 47
+    - 54
+    - 61
+    - 70
+    - 81
+    - 94
+  - - 6
+    - 11.5
+    - 22
+    - 42
+    - 83
+    - 155
+    - 290
+    - 510
+    - 790
+    - 915
+    - 960
+    - 985
+  test_dmminus: 0.6
+  test_dmplus: 0.4
+  test_gkrad_flag: sum
+  test_magthresh: 5.5
+  test_removed_flag: GK
 packages: null
 platform: macOS-12.6-arm64-arm-64bit
 python:
@@ -15,20 +58,187 @@ python:
   - '16'
 repositories:
   .:
-    diff: "diff --git a/README.md b/README.md\nindex 2cf3cb8..cd268ae 100644\n---\
-      \ a/README.md\n+++ b/README.md\n@@ -4,7 +4,7 @@ The repository contains:\n \n\
-      \ * The originally written *mathematica code notebook* (mathematica_code.nb).This\
-      \ is the software complete with all features and an interactive GUI. The notebook\
-      \ can run on in a licensed Wolfram Mathematica environment (https://www.wolfram.com/mathematica)\
-      \ or in the Wolfram Player Pro (https://www.wolfram.com/player-pro/), the commercial\
-      \ paid version with I/O enabled.\n \n-* the *python porting of the catalog scanning\
-      \ routine core algorithm, added in two formats: \n+* the *python porting* of\
-      \ the catalog scanning routine core algorithm, added in two formats: \n    *\
-      \ pure python code (python_code.py).\n    * the Colab ipython version (multiplets_core_colab.ipynb)\n\
-      \  The code has been checked to behave exactly as the mathematica code. No GUI\
-      \ programming is anyway present: I/O is actually based on disk files read-write.\
-      \ Any user interface can be easily added by experienced Python programmers. "
+    diff: "diff --git a/multiplets_core.py b/multiplets_core.py\nindex a5893f3..8627744\
+      \ 100644\n--- a/multiplets_core.py\n+++ b/multiplets_core.py\n@@ -79,10 +79,8\
+      \ @@ gardnerknopofflist = [[2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5,\n \n\
+      \ # recording parameters; this is not necessarily needed, as the code state\n\
+      \ # is recorded, but it is convenient.\n-# context.add_data('gardnerknopofflist',\
+      \ gardnerknopofflist)\n+context.add_data('gardnerknopofflist', gardnerknopofflist)\n\
+      \ \n-# exporting the provenance data to disk\n-context.export_yaml('results_python_prov.yaml')\n\
+      \ \n \n def gkr(mag):\n@@ -146,13 +144,18 @@ magthresh=5.5\n dmplus=.4\n dmminus=.6\n\
+      \ \n+# add to the reproducible repository the parameters used for the test\n\
+      +# that produces the files in ascii.zip\n+context.add_data('test_removed_flag',\
+      \ removed)\n+context.add_data('test_gkrad_flag', gkrad)\n+context.add_data('test_magthresh',\
+      \ magthresh)\n+context.add_data('test_dmplus', dmplus)\n+context.add_data('test_dmminus',\
+      \ dmminus)\n \n ########################  data subset PRE-FILTERING ######################\n\
+      \ \n indexes=np.arange(len(orig))\n orig=np.concatenate((orig[:,:-1], np.atleast_2d(indexes).T),\
+      \ axis=1)\n-#data=orig[np.where(orig[:,4] >= magthresh - dmminus)]\n-#mp=orig[np.where(orig[:,4]\
+      \ >= (magthresh - dmminus)),-1][0].astype(int)\n \n # round necessary to overcome\
+      \ low precision in python default float in subtraction\n evthr=round(magthresh\
+      \ - dmminus,6)\n@@ -165,15 +168,10 @@ data=orig\n np.savetxt('python_orig.txt',\
+      \ data, fmt='%10.5f', delimiter='\\t', newline='\\n', header='', footer='',\
+      \ comments='# ', encoding=None)\n np.savetxt('python_mp.txt', mp, fmt='%d')\n\
+      \ \n-# indexes=np.arange(len(data))\n-# re-indexing on extracted sub-list\n\
+      -# data=np.concatenate((data[:,:-1], np.atleast_2d(indexes).T), axis=1)\n-\n\
+      \ print('magnitude subset of ', mplen, 'events...')\n \n \n #***************\
+      \ MAIN LOOP **************\n-#debug=open('/Volumes/GoogleDrive/Il mio Drive/Colab\
+      \ Notebooks/multiplette/dati/python_debug.txt', 'w')\n \n while(len(mp)>1):\n\
+      \     intersections=[]\n@@ -189,11 +187,6 @@ while(len(mp)>1):\n \n     j=mp[n]\n\
+      \     mpback=mp\n-    #print(j, file=debug)\n-    \n-    #if j==323387:\n- \
+      \   #    print('breakpoint')\n-\n     mp=np.delete(mp,slice(0,n))\n     n=0\n\
+      \ \n@@ -255,7 +248,6 @@ while(len(mp)>1):\n     lmpold=len(mp)\n \n     if removed\
+      \ == \"GK\":\n-        #mp1=[x for x in mp if x not in gkconnected]\n      \
+      \   mp=sorted(list(set(mp)-set(gkconnected)))\n     elif removed == \"GK-Mag\"\
+      :\n         mp=sorted(list(set(mp)-set(intersections)))\n@@ -278,7 +270,7 @@\
+      \ print('algorithm parameters: removal (',removed,') interaction radii function\
+      \ ('\n print('# multiplets:', len(multiplets))\n print('# counts: ',cnt)\n \n\
+      -# put eventual path for complete output file save\n+# file containing detailed\
+      \ output: edit path if needed \n f=open('python_vs_out_new.txt', 'w')\n print('catalogue\
+      \ file: ',catfile, file=f)\n print('threshold magnitude:', magthresh, '(-',\
+      \ dmminus, ') e (+', dmplus,')' , file=f)\n@@ -288,3 +280,6 @@ print('# multiplets:',\
+      \ len(multiplets), file=f)\n print('# counts: ',cnt, file=f)\n print(multiplets,\
+      \ file=f)\n f.close()\n+\n+# reproducible: exporting the provenance data to\
+      \ disk\n+context.export_yaml('results_python_prov.yaml')\n\\ No newline at end\
+      \ of file\ndiff --git a/results_python_prov.yaml b/results_python_prov.yaml\n\
+      index 75892f4..0b993e6 100644\n--- a/results_python_prov.yaml\n+++ b/results_python_prov.yaml\n\
+      @@ -1,5 +1,48 @@\n argv:\n - /Users/robertocarluccio/Documents/GitHub/multiplets_paper_repo/multiplets_core.py\n\
+      +data:\n+  gardnerknopofflist:\n+  - - 2.5\n+    - 3\n+    - 3.5\n+    - 4\n\
+      +    - 4.5\n+    - 5\n+    - 5.5\n+    - 6\n+    - 6.5\n+    - 7\n+    - 7.5\n\
+      +    - 8\n+  - - 19.5\n+    - 22.5\n+    - 26\n+    - 30\n+    - 35\n+    -\
+      \ 40\n+    - 47\n+    - 54\n+    - 61\n+    - 70\n+    - 81\n+    - 94\n+  -\
+      \ - 6\n+    - 11.5\n+    - 22\n+    - 42\n+    - 83\n+    - 155\n+    - 290\n\
+      +    - 510\n+    - 790\n+    - 915\n+    - 960\n+    - 985\n+  test_dmminus:\
+      \ 0.6\n+  test_dmplus: 0.4\n+  test_gkrad_flag: sum\n+  test_magthresh: 5.5\n\
+      +  test_removed_flag: GK\n packages: null\n platform: macOS-12.6-arm64-arm-64bit\n\
+      \ python:\n@@ -13,72 +56,49 @@ python:\n   - '16'\n repositories:\n   .:\n-\
+      \    diff: \"diff --git a/README.md b/README.md\\nindex cd268ae..c33d486 100644\\\
+      n---\\\n-      \\ a/README.md\\n+++ b/README.md\\n@@ -15,12 +15,12 @@ The repository\
+      \ contains:\\n\\\n-      \\ \\n Since the regular mathematica notebook cannot\
+      \ be run without some sort\\\n-      \\ of license, a CDF file (https://www.wolfram.com/cdf/)\
+      \ has also been included.\\\n-      \\ This file is a fully working GUI of the\
+      \ software in which I/O operations are\\\n-      \\ disabled and catalog data\
+      \ is fixed and hardcoded in the CDF. It can be used\\\n-      \\ freely with\
+      \ the CDF player from Wolfram. They provide the same functionality\\\n-    \
+      \  \\ of the regular notebook and is provided for GUI demonstration.\\n \\n-The\
+      \ python\\\n-      \\ code uses some classes that must be installed in the local\
+      \ environment, the\\\n-      \\ file environment.yml is the Conda description\
+      \ export of the environment under\\\n-      \\ which the software actually runs.\
+      \ It can be useful to build the same environment\\\n-      \\ on the reader\
+      \ local machine using Conda.\\n+The python code uses some classes\\\n-     \
+      \ \\ that must be installed in the local environment, the file conda_env_export.yml\\\
+      \n-      \\ is the Conda export of the environment under which the software\
+      \ actually runs.\\\n-      \\ Even if it is not straightforward to reconstruct\
+      \ the python environment from\\\n-      \\ this file using Conda, it can anyway\
+      \ give some useful info.\\n \\n-In the .py\\\n-      \\ and .ipynb files all\
+      \ file names are hard-coded in the program itself. They\\\n-      \\ have no\
+      \ assigned path therefore the python interpreter expects to find them\\\n- \
+      \     \\ in the same directory were the program is. If needed user can be edit\
+      \ these\\\n-      \\ lines to point to some other preferred user paths. Furthermore\
+      \ parameters\\\n-      \\ setting i.e. magniture threshold and magnitude differences\
+      \ are specified in\\\n-      \\ the code too and need to be edited to change\
+      \ those parameters too. THe same\\\n-      \\ is true for the Gardner & Knopoff\
+      \ function defined as lists in the code.\\n\\\n-      +In both python executables,\
+      \ assignable variables are actually hard-coded in\\\n-      \\ the program code.\
+      \ For as regarding the I/O file names, they have no assigned\\\n-      \\ path,\
+      \ therefore the python interpreter expects to find them in the same directory\\\
+      \n-      \\ were the program is. Before running the program, user should thus\
+      \ check the\\\n-      \\ path to files, the threshold magnitudes and the flags.\
+      \ The Gardner & Knopoff\\\n-      \\ tables are defined as lists in the code\
+      \ too.\\n \\n The jupyter version should\\\n-      \\ follow the same prescriptions\
+      \ of the python IDE if it is run locally. However,\\\n-      \\ in the web IDE\
+      \ version of Google Colab, user could need extra disk space and\\\n-      \\\
+      \ should connect the web IDE to the corresponding (same user) Google Drive space.\\\
+      \n-      \\ In the code there is a cell written to the purpose, but the procedure\
+      \ is anyway\\\n-      \\ well documented in the Google environment.\\n \\n-As\
+      \ a last add-on a reproducible\\\n-      \\ () generated yaml file has been\
+      \ added to give informations on the actual working\\\n-      \\ environment\
+      \ under which the file runs (see also the Conda environment file\\\n-      \\\
+      \ described above).\\n+As a last add-on, two files generated from the reproducible\\\
+      \n-      \\ class (the code to do this has been left commented) generated yaml\
+      \ file has\\\n-      \\ been added to give informations on the actual working\
+      \ environment under which\\\n-      \\ the file runs (see also the Conda environment\
+      \ file described above).\\n \\n\\\n-      \\ The code is open source, not maintained\
+      \ and hopefully \\\"citation-ware\\\" i.e.\\\n-      \\ it can be used completely\
+      \ free, and a citation to the author is more than\\\n-      \\ welcome.\\ndiff\
+      \ --git a/multiplets_core.py b/multiplets_core.py\\nindex a4bae28..a5893f3\\\
+      \n-      \\ 100644\\n--- a/multiplets_core.py\\n+++ b/multiplets_core.py\\n@@\
+      \ -27,30 +27,18\\\n-      \\ @@ import reproducible\\n # tracked data.\\n context\
+      \ = reproducible.Context()\\n\\\n-      \\ \\n-# recording git repository state\\\
+      n+# reproducible code for recording git\\\n-      \\ repository state\\n # here\
+      \ we are okay with running our code with uncommitted\\\n-      \\ changes, but\\\
+      n # we record a diff of the changes in the tracked data.\\n context.add_repo(path='.',\\\
+      \n-      \\ allow_dirty=True, diff=True)\\n \\n-# recording parameters; this\
+      \ is not necessarily\\\n-      \\ needed, as the code state\\n+# reproducible\
+      \ code for recording parameters;\\\n-      \\ this is not necessarily needed,\
+      \ as the code state\\n # is recorded, but it\\\n-      \\ is convenient.\\n\
+      \ #seed = 1\\n #random.seed(seed)\\n #context.add_data('seed',\\\n-      \\\
+      \ seed)\\n \\n-# add_data return the provided value (here 10), so you can do\
+      \ this:\\n\\\n-      -#n = reproducible.add_data('n', 10)\\n-#results = walk(n)\\\
+      n-\\n-# recording the\\\n-      \\ SHA1 hash of the output file\\n-#context.add_file('results.pickle',\
+      \ category='output')\\n\\\n-      -\\n-# you can examine the tracked data and\
+      \ add or remove from it at any moment\\n\\\n-      -# with `context.data`: it\
+      \ is a simple dictionary. For instance, the\\n-# cpu\\\n-      \\ info is quite\
+      \ detailed. Let's remove it to keep the yaml output short.\\n-#context.data.pop('cpuinfo')\\\
+      n\\\n-      -\\n-# exporting the provenance data to disk\\n+# reproducible code\
+      \ for exporting\\\n-      \\ the provenance data to disk\\n context.export_yaml('results_python_prov.yaml')\\\
+      n\\\n-      \\ \\n \\n@@ -91,7 +79,7 @@ gardnerknopofflist = [[2.5, 3, 3.5,\
+      \ 4, 4.5, 5, 5.5,\\\n-      \\ 6, 6.5, 7, 7.5,\\n \\n # recording parameters;\
+      \ this is not necessarily needed,\\\n-      \\ as the code state\\n # is recorded,\
+      \ but it is convenient.\\n-context.add_data('gardnerknopofflist',\\\n-     \
+      \ \\ gardnerknopofflist)\\n+# context.add_data('gardnerknopofflist', gardnerknopofflist)\\\
+      n\\\n-      \\ \\n # exporting the provenance data to disk\\n context.export_yaml('results_python_prov.yaml')\"\
+      \n+    diff: \"diff --git a/multiplets_core.py b/multiplets_core.py\\nindex\
+      \ a5893f3..8627744\\\n+      \\ 100644\\n--- a/multiplets_core.py\\n+++ b/multiplets_core.py\\\
+      n@@ -79,10 +79,8\\\n+      \\ @@ gardnerknopofflist = [[2.5, 3, 3.5, 4, 4.5,\
+      \ 5, 5.5, 6, 6.5, 7, 7.5,\\n \\n\\\n+      \\ # recording parameters; this is\
+      \ not necessarily needed, as the code state\\n\\\n+      \\ # is recorded, but\
+      \ it is convenient.\\n-# context.add_data('gardnerknopofflist',\\\n+      \\\
+      \ gardnerknopofflist)\\n+context.add_data('gardnerknopofflist', gardnerknopofflist)\\\
+      n\\\n+      \\ \\n-# exporting the provenance data to disk\\n-context.export_yaml('results_python_prov.yaml')\\\
+      n\\\n+      \\ \\n \\n def gkr(mag):\\n@@ -146,13 +144,18 @@ magthresh=5.5\\\
+      n dmplus=.4\\n dmminus=.6\\n\\\n+      \\ \\n+# add to the reproducible repository\
+      \ the parameters used for the test\\n\\\n+      +# that produces the files in\
+      \ ascii.zip\\n+context.add_data('test_removed_flag',\\\n+      \\ removed)\\\
+      n+context.add_data('test_gkrad_flag', gkrad)\\n+context.add_data('test_magthresh',\\\
+      \n+      \\ magthresh)\\n+context.add_data('test_dmplus', dmplus)\\n+context.add_data('test_dmminus',\\\
+      \n+      \\ dmminus)\\n \\n ########################  data subset PRE-FILTERING\
+      \ ######################\\n\\\n+      \\ \\n indexes=np.arange(len(orig))\\\
+      n orig=np.concatenate((orig[:,:-1], np.atleast_2d(indexes).T),\\\n+      \\\
+      \ axis=1)\\n-#data=orig[np.where(orig[:,4] >= magthresh - dmminus)]\\n-#mp=orig[np.where(orig[:,4]\\\
+      \n+      \\ >= (magthresh - dmminus)),-1][0].astype(int)\\n \\n # round necessary\
+      \ to overcome\\\n+      \\ low precision in python default float in subtraction\\\
+      n evthr=round(magthresh\\\n+      \\ - dmminus,6)\\n@@ -165,15 +168,10 @@ data=orig\\\
+      n np.savetxt('python_orig.txt',\\\n+      \\ data, fmt='%10.5f', delimiter='\\\
+      \\t', newline='\\\\n', header='', footer='',\\\n+      \\ comments='# ', encoding=None)\\\
+      n np.savetxt('python_mp.txt', mp, fmt='%d')\\n\\\n+      \\ \\n-# indexes=np.arange(len(data))\\\
+      n-# re-indexing on extracted sub-list\\n\\\n+      -# data=np.concatenate((data[:,:-1],\
+      \ np.atleast_2d(indexes).T), axis=1)\\n-\\n\\\n+      \\ print('magnitude subset\
+      \ of ', mplen, 'events...')\\n \\n \\n #***************\\\n+      \\ MAIN LOOP\
+      \ **************\\n-#debug=open('/Volumes/GoogleDrive/Il mio Drive/Colab\\\n\
+      +      \\ Notebooks/multiplette/dati/python_debug.txt', 'w')\\n \\n while(len(mp)>1):\\\
+      n\\\n+      \\     intersections=[]\\n@@ -189,11 +187,6 @@ while(len(mp)>1):\\\
+      n \\n     j=mp[n]\\n\\\n+      \\     mpback=mp\\n-    #print(j, file=debug)\\\
+      n-    \\n-    #if j==323387:\\n- \\\n+      \\   #    print('breakpoint')\\\
+      n-\\n     mp=np.delete(mp,slice(0,n))\\n     n=0\\n\\\n+      \\ \\n@@ -255,7\
+      \ +248,6 @@ while(len(mp)>1):\\n     lmpold=len(mp)\\n \\n     if removed\\\n\
+      +      \\ == \\\"GK\\\":\\n-        #mp1=[x for x in mp if x not in gkconnected]\\\
+      n      \\\n+      \\   mp=sorted(list(set(mp)-set(gkconnected)))\\n     elif\
+      \ removed == \\\"GK-Mag\\\"\\\n+      :\\n         mp=sorted(list(set(mp)-set(intersections)))\\\
+      n@@ -278,7 +270,7 @@\\\n+      \\ print('algorithm parameters: removal (',removed,')\
+      \ interaction radii function\\\n+      \\ ('\\n print('# multiplets:', len(multiplets))\\\
+      n print('# counts: ',cnt)\\n \\n\\\n+      -# put eventual path for complete\
+      \ output file save\\n+# file containing detailed\\\n+      \\ output: edit path\
+      \ if needed \\n f=open('python_vs_out_new.txt', 'w')\\n print('catalogue\\\n\
+      +      \\ file: ',catfile, file=f)\\n print('threshold magnitude:', magthresh,\
+      \ '(-',\\\n+      \\ dmminus, ') e (+', dmplus,')' , file=f)\\n@@ -288,3 +280,6\
+      \ @@ print('# multiplets:',\\\n+      \\ len(multiplets), file=f)\\n print('#\
+      \ counts: ',cnt, file=f)\\n print(multiplets,\\\n+      \\ file=f)\\n f.close()\\\
+      n+\\n+# reproducible: exporting the provenance data to\\\n+      \\ disk\\n+context.export_yaml('results_python_prov.yaml')\\\
+      n\\\\ No newline at end\\\n+      \\ of file\"\n     dirty: true\n-    hash:\
+      \ b364fc8e601b936aad1201dd997092c38bb3b3a5\n+    hash: be3cee8ec23284e1dcf0669beefde9cc5eeff99f\n\
+      \     version: git version 2.37.1 (Apple Git-137.1)\n-timestamp: '2023-06-06T10:16:42.231230Z'\n\
+      +timestamp: '2023-06-06T13:19:04.872413Z'"
     dirty: true
-    hash: 9b22b8261287d02034013b1b078d59e5b90b7221
+    hash: be3cee8ec23284e1dcf0669beefde9cc5eeff99f
     version: git version 2.37.1 (Apple Git-137.1)
-timestamp: '2023-06-05T17:01:48.044649Z'
+timestamp: '2023-06-06T13:21:41.916398Z'

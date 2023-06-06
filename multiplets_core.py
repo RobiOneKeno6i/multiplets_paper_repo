@@ -79,10 +79,8 @@ gardnerknopofflist = [[2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5,
 
 # recording parameters; this is not necessarily needed, as the code state
 # is recorded, but it is convenient.
-# context.add_data('gardnerknopofflist', gardnerknopofflist)
+context.add_data('gardnerknopofflist', gardnerknopofflist)
 
-# exporting the provenance data to disk
-context.export_yaml('results_python_prov.yaml')
 
 
 def gkr(mag):
@@ -146,13 +144,18 @@ magthresh=5.5
 dmplus=.4
 dmminus=.6
 
+# add to the reproducible repository the parameters used for the test
+# that produces the files in ascii.zip
+context.add_data('test_removed_flag', removed)
+context.add_data('test_gkrad_flag', gkrad)
+context.add_data('test_magthresh', magthresh)
+context.add_data('test_dmplus', dmplus)
+context.add_data('test_dmminus', dmminus)
 
 ########################  data subset PRE-FILTERING ######################
 
 indexes=np.arange(len(orig))
 orig=np.concatenate((orig[:,:-1], np.atleast_2d(indexes).T), axis=1)
-#data=orig[np.where(orig[:,4] >= magthresh - dmminus)]
-#mp=orig[np.where(orig[:,4] >= (magthresh - dmminus)),-1][0].astype(int)
 
 # round necessary to overcome low precision in python default float in subtraction
 evthr=round(magthresh - dmminus,6)
@@ -165,15 +168,10 @@ data=orig
 np.savetxt('python_orig.txt', data, fmt='%10.5f', delimiter='\t', newline='\n', header='', footer='', comments='# ', encoding=None)
 np.savetxt('python_mp.txt', mp, fmt='%d')
 
-# indexes=np.arange(len(data))
-# re-indexing on extracted sub-list
-# data=np.concatenate((data[:,:-1], np.atleast_2d(indexes).T), axis=1)
-
 print('magnitude subset of ', mplen, 'events...')
 
 
 #*************** MAIN LOOP **************
-#debug=open('/Volumes/GoogleDrive/Il mio Drive/Colab Notebooks/multiplette/dati/python_debug.txt', 'w')
 
 while(len(mp)>1):
     intersections=[]
@@ -189,11 +187,6 @@ while(len(mp)>1):
 
     j=mp[n]
     mpback=mp
-    #print(j, file=debug)
-    
-    #if j==323387:
-    #    print('breakpoint')
-
     mp=np.delete(mp,slice(0,n))
     n=0
 
@@ -255,7 +248,6 @@ while(len(mp)>1):
     lmpold=len(mp)
 
     if removed == "GK":
-        #mp1=[x for x in mp if x not in gkconnected]
         mp=sorted(list(set(mp)-set(gkconnected)))
     elif removed == "GK-Mag":
         mp=sorted(list(set(mp)-set(intersections)))
@@ -278,7 +270,7 @@ print('algorithm parameters: removal (',removed,') interaction radii function ('
 print('# multiplets:', len(multiplets))
 print('# counts: ',cnt)
 
-# put eventual path for complete output file save
+# file containing detailed output: edit path if needed 
 f=open('python_vs_out_new.txt', 'w')
 print('catalogue file: ',catfile, file=f)
 print('threshold magnitude:', magthresh, '(-', dmminus, ') e (+', dmplus,')' , file=f)
@@ -288,3 +280,6 @@ print('# multiplets:', len(multiplets), file=f)
 print('# counts: ',cnt, file=f)
 print(multiplets, file=f)
 f.close()
+
+# reproducible: exporting the provenance data to disk
+context.export_yaml('results_python_prov.yaml')
