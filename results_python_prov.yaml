@@ -1,0 +1,84 @@
+argv:
+- /Users/robertocarluccio/Documents/GitHub/multiplets_paper_repo/multiplets_core.py
+packages: null
+platform: macOS-12.6-arm64-arm-64bit
+python:
+  branch: ''
+  compiler: 'Clang 14.0.6 '
+  implementation: CPython
+  revision: ''
+  version:
+  - '3'
+  - '9'
+  - '16'
+repositories:
+  .:
+    diff: "diff --git a/README.md b/README.md\nindex cd268ae..c33d486 100644\n---\
+      \ a/README.md\n+++ b/README.md\n@@ -15,12 +15,12 @@ The repository contains:\n\
+      \ \n Since the regular mathematica notebook cannot be run without some sort\
+      \ of license, a CDF file (https://www.wolfram.com/cdf/) has also been included.\
+      \ This file is a fully working GUI of the software in which I/O operations are\
+      \ disabled and catalog data is fixed and hardcoded in the CDF. It can be used\
+      \ freely with the CDF player from Wolfram. They provide the same functionality\
+      \ of the regular notebook and is provided for GUI demonstration.\n \n-The python\
+      \ code uses some classes that must be installed in the local environment, the\
+      \ file environment.yml is the Conda description export of the environment under\
+      \ which the software actually runs. It can be useful to build the same environment\
+      \ on the reader local machine using Conda.\n+The python code uses some classes\
+      \ that must be installed in the local environment, the file conda_env_export.yml\
+      \ is the Conda export of the environment under which the software actually runs.\
+      \ Even if it is not straightforward to reconstruct the python environment from\
+      \ this file using Conda, it can anyway give some useful info.\n \n-In the .py\
+      \ and .ipynb files all file names are hard-coded in the program itself. They\
+      \ have no assigned path therefore the python interpreter expects to find them\
+      \ in the same directory were the program is. If needed user can be edit these\
+      \ lines to point to some other preferred user paths. Furthermore parameters\
+      \ setting i.e. magniture threshold and magnitude differences are specified in\
+      \ the code too and need to be edited to change those parameters too. THe same\
+      \ is true for the Gardner & Knopoff function defined as lists in the code.\n\
+      +In both python executables, assignable variables are actually hard-coded in\
+      \ the program code. For as regarding the I/O file names, they have no assigned\
+      \ path, therefore the python interpreter expects to find them in the same directory\
+      \ were the program is. Before running the program, user should thus check the\
+      \ path to files, the threshold magnitudes and the flags. The Gardner & Knopoff\
+      \ tables are defined as lists in the code too.\n \n The jupyter version should\
+      \ follow the same prescriptions of the python IDE if it is run locally. However,\
+      \ in the web IDE version of Google Colab, user could need extra disk space and\
+      \ should connect the web IDE to the corresponding (same user) Google Drive space.\
+      \ In the code there is a cell written to the purpose, but the procedure is anyway\
+      \ well documented in the Google environment.\n \n-As a last add-on a reproducible\
+      \ () generated yaml file has been added to give informations on the actual working\
+      \ environment under which the file runs (see also the Conda environment file\
+      \ described above).\n+As a last add-on, two files generated from the reproducible\
+      \ class (the code to do this has been left commented) generated yaml file has\
+      \ been added to give informations on the actual working environment under which\
+      \ the file runs (see also the Conda environment file described above).\n \n\
+      \ The code is open source, not maintained and hopefully \"citation-ware\" i.e.\
+      \ it can be used completely free, and a citation to the author is more than\
+      \ welcome.\ndiff --git a/multiplets_core.py b/multiplets_core.py\nindex a4bae28..a5893f3\
+      \ 100644\n--- a/multiplets_core.py\n+++ b/multiplets_core.py\n@@ -27,30 +27,18\
+      \ @@ import reproducible\n # tracked data.\n context = reproducible.Context()\n\
+      \ \n-# recording git repository state\n+# reproducible code for recording git\
+      \ repository state\n # here we are okay with running our code with uncommitted\
+      \ changes, but\n # we record a diff of the changes in the tracked data.\n context.add_repo(path='.',\
+      \ allow_dirty=True, diff=True)\n \n-# recording parameters; this is not necessarily\
+      \ needed, as the code state\n+# reproducible code for recording parameters;\
+      \ this is not necessarily needed, as the code state\n # is recorded, but it\
+      \ is convenient.\n #seed = 1\n #random.seed(seed)\n #context.add_data('seed',\
+      \ seed)\n \n-# add_data return the provided value (here 10), so you can do this:\n\
+      -#n = reproducible.add_data('n', 10)\n-#results = walk(n)\n-\n-# recording the\
+      \ SHA1 hash of the output file\n-#context.add_file('results.pickle', category='output')\n\
+      -\n-# you can examine the tracked data and add or remove from it at any moment\n\
+      -# with `context.data`: it is a simple dictionary. For instance, the\n-# cpu\
+      \ info is quite detailed. Let's remove it to keep the yaml output short.\n-#context.data.pop('cpuinfo')\n\
+      -\n-# exporting the provenance data to disk\n+# reproducible code for exporting\
+      \ the provenance data to disk\n context.export_yaml('results_python_prov.yaml')\n\
+      \ \n \n@@ -91,7 +79,7 @@ gardnerknopofflist = [[2.5, 3, 3.5, 4, 4.5, 5, 5.5,\
+      \ 6, 6.5, 7, 7.5,\n \n # recording parameters; this is not necessarily needed,\
+      \ as the code state\n # is recorded, but it is convenient.\n-context.add_data('gardnerknopofflist',\
+      \ gardnerknopofflist)\n+# context.add_data('gardnerknopofflist', gardnerknopofflist)\n\
+      \ \n # exporting the provenance data to disk\n context.export_yaml('results_python_prov.yaml')"
+    dirty: true
+    hash: b364fc8e601b936aad1201dd997092c38bb3b3a5
+    version: git version 2.37.1 (Apple Git-137.1)
+timestamp: '2023-06-06T10:16:42.231230Z'

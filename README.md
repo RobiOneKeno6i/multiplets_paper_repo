@@ -15,12 +15,12 @@ The repository contains:
 
 Since the regular mathematica notebook cannot be run without some sort of license, a CDF file (https://www.wolfram.com/cdf/) has also been included. This file is a fully working GUI of the software in which I/O operations are disabled and catalog data is fixed and hardcoded in the CDF. It can be used freely with the CDF player from Wolfram. They provide the same functionality of the regular notebook and is provided for GUI demonstration.
 
-The python code uses some classes that must be installed in the local environment, the file environment.yml is the Conda description export of the environment under which the software actually runs. It can be useful to build the same environment on the reader local machine using Conda.
+The python code uses some classes that must be installed in the local environment, the file conda_env_export.yml is the Conda export of the environment under which the software actually runs. Even if it is not straightforward to reconstruct the python environment from this file using Conda, it can anyway give some useful info.
 
-In the .py and .ipynb files all file names are hard-coded in the program itself. They have no assigned path therefore the python interpreter expects to find them in the same directory were the program is. If needed user can be edit these lines to point to some other preferred user paths. Furthermore parameters setting i.e. magniture threshold and magnitude differences are specified in the code too and need to be edited to change those parameters too. THe same is true for the Gardner & Knopoff function defined as lists in the code.
+In both python executables, assignable variables are actually hard-coded in the program code. For as regarding the I/O file names, they have no assigned path, therefore the python interpreter expects to find them in the same directory were the program is. Before running the program, user should thus check the path to files, the threshold magnitudes and the flags. The Gardner & Knopoff tables are defined as lists in the code too.
 
 The jupyter version should follow the same prescriptions of the python IDE if it is run locally. However, in the web IDE version of Google Colab, user could need extra disk space and should connect the web IDE to the corresponding (same user) Google Drive space. In the code there is a cell written to the purpose, but the procedure is anyway well documented in the Google environment.
 
-As a last add-on a reproducible () generated yaml file has been added to give informations on the actual working environment under which the file runs (see also the Conda environment file described above).
+As a last add-on, two files generated from the reproducible class (the code to do this has been left commented) generated yaml file has been added to give informations on the actual working environment under which the file runs (see also the Conda environment file described above).
 
 The code is open source, not maintained and hopefully "citation-ware" i.e. it can be used completely free, and a citation to the author is more than welcome.
