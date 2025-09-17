@@ -56,49 +56,8 @@ python:
   - '16'
 repositories:
   .:
-    diff: "diff --git a/multiplets_core.py b/multiplets_core.py\nindex a5893f3..8627744\
-      \ 100644\n--- a/multiplets_core.py\n+++ b/multiplets_core.py\n@@ -79,10 +79,8\
-      \ @@ gardnerknopofflist = [[2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5,\n \n\
-      \ # recording parameters; this is not necessarily needed, as the code state\n\
-      \ # is recorded, but it is convenient.\n-# context.add_data('gardnerknopofflist',\
-      \ gardnerknopofflist)\n+context.add_data('gardnerknopofflist', gardnerknopofflist)\n\
-      \ \n-# exporting the provenance data to disk\n-context.export_yaml('results_python_prov.yaml')\n\
-      \ \n \n def gkr(mag):\n@@ -146,13 +144,18 @@ magthresh=5.5\n dmplus=.4\n dmminus=.6\n\
-      \ \n+# add to the reproducible repository the parameters used for the test\n\
-      +# that produces the files in ascii.zip\n+context.add_data('test_removed_flag',\
-      \ removed)\n+context.add_data('test_gkrad_flag', gkrad)\n+context.add_data('test_magthresh',\
-      \ magthresh)\n+context.add_data('test_dmplus', dmplus)\n+context.add_data('test_dmminus',\
-      \ dmminus)\n \n ########################  data subset PRE-FILTERING ######################\n\
-      \ \n indexes=np.arange(len(orig))\n orig=np.concatenate((orig[:,:-1], np.atleast_2d(indexes).T),\
-      \ axis=1)\n-#data=orig[np.where(orig[:,4] >= magthresh - dmminus)]\n-#mp=orig[np.where(orig[:,4]\
-      \ >= (magthresh - dmminus)),-1][0].astype(int)\n \n # round necessary to overcome\
-      \ low precision in python default float in subtraction\n evthr=round(magthresh\
-      \ - dmminus,6)\n@@ -165,15 +168,10 @@ data=orig\n np.savetxt('python_orig.txt',\
-      \ data, fmt='%10.5f', delimiter='\\t', newline='\\n', header='', footer='',\
-      \ comments='# ', encoding=None)\n np.savetxt('python_mp.txt', mp, fmt='%d')\n\
-      \ \n-# indexes=np.arange(len(data))\n-# re-indexing on extracted sub-list\n\
-      -# data=np.concatenate((data[:,:-1], np.atleast_2d(indexes).T), axis=1)\n-\n\
-      \ print('magnitude subset of ', mplen, 'events...')\n \n \n #***************\
-      \ MAIN LOOP **************\n-#debug=open('/Volumes/GoogleDrive/Il mio Drive/Colab\
-      \ Notebooks/multiplette/dati/python_debug.txt', 'w')\n \n while(len(mp)>1):\n\
-      \     intersections=[]\n@@ -189,11 +187,6 @@ while(len(mp)>1):\n \n     j=mp[n]\n\
-      \     mpback=mp\n-    #print(j, file=debug)\n-    \n-    #if j==323387:\n- \
-      \   #    print('breakpoint')\n-\n     mp=np.delete(mp,slice(0,n))\n     n=0\n\
-      \ \n@@ -255,7 +248,6 @@ while(len(mp)>1):\n     lmpold=len(mp)\n \n     if removed\
-      \ == \"GK\":\n-        #mp1=[x for x in mp if x not in gkconnected]\n      \
-      \   mp=sorted(list(set(mp)-set(gkconnected)))\n     elif removed == \"GK-Mag\"\
-      :\n         mp=sorted(list(set(mp)-set(intersections)))\n@@ -278,7 +270,7 @@\
-      \ print('algorithm parameters: removal (',removed,') interaction radii function\
-      \ ('\n print('# multiplets:', len(multiplets))\n print('# counts: ',cnt)\n \n\
-      -# put eventual path for complete output file save\n+# file containing detailed\
-      \ output: edit path if needed \n f=open('python_vs_out_new.txt', 'w')\n print('catalogue\
-      \ file: ',catfile, file=f)\n print('threshold magnitude:', magthresh, '(-',\
-      \ dmminus, ') e (+', dmplus,')' , file=f)\n@@ -288,3 +280,6 @@ print('# multiplets:',\
-      \ len(multiplets), file=f)\n print('# counts: ',cnt, file=f)\n print(multiplets,\
-      \ file=f)\n f.close()\n+\n+# reproducible: exporting the provenance data to\
-      \ disk\n+context.export_yaml('results_python_prov.yaml')\n\\ No newline at end\
-      \ of file"
-    dirty: true
-    hash: be3cee8ec23284e1dcf0669beefde9cc5eeff99f
+    diff: null
+    dirty: false
+    hash: f22f9712705bf0d736fee759a6de59efc0e30eee
     version: git version 2.37.1 (Apple Git-137.1)
-timestamp: '2023-06-06T13:19:04.872413Z'
+timestamp: '2023-06-06T14:48:23.949180Z'
